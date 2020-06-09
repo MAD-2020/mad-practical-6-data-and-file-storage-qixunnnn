@@ -1,5 +1,6 @@
 package sg.edu.np.week_6_whackamole_3_0;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,33 +19,44 @@ public class CustomScoreAdaptor extends RecyclerView.Adapter<CustomScoreViewHold
      */
     private static final String FILENAME = "CustomScoreAdaptor.java";
     private static final String TAG = "Whack-A-Mole3.0!";
+    private Context currentContext;
+    private UserData userdata;
+    private ArrayList<Integer> level_list;
+    private ArrayList<Integer> score_list;
 
-    public CustomScoreAdaptor(UserData userdata){
-        /* Hint:
-        This method takes in the data and readies it for processing.
-         */
+    public CustomScoreAdaptor(UserData userdata, Context c){
+        this.userdata = userdata;
+        this.level_list = userdata.getLevels();
+        this.score_list = userdata.getScores();
+        this.currentContext = c;
     }
 
     public CustomScoreViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
-        /* Hint:
-        This method dictates how the viewholder layuout is to be once the viewholder is created.
-         */
+        View item = LayoutInflater.from(parent.getContext()).inflate(R.layout.level_select,parent,false);
+        return new CustomScoreViewHolder(item);
     }
 
     public void onBindViewHolder(CustomScoreViewHolder holder, final int position){
 
-        /* Hint:
-        This method passes the data to the viewholder upon bounded to the viewholder.
-        It may also be used to do an onclick listener here to activate upon user level selections.
+        holder.level.setText("Level " + level_list.get(position).toString());
+        holder.score.setText("Highest Score: " + score_list.get(position).toString());
 
         Log.v(TAG, FILENAME + " Showing level " + level_list.get(position) + " with highest score: " + score_list.get(position));
-        Log.v(TAG, FILENAME+ ": Load level " + position +" for: " + list_members.getMyUserName());
-         */
+        Log.v(TAG, FILENAME+ ": Load level " + position +" for: " + userdata.getMyUserName());
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(currentContext,Main4Activity.class);
+                i.putExtra("level",level_list.get(position));
+                i.putExtra("currentUser",userdata.getMyUserName());
+                currentContext.startActivity(i);
+            }
+        });
+
     }
 
     public int getItemCount(){
-        /* Hint:
-        This method returns the the size of the overall data.
-         */
+        return score_list.size();
     }
 }

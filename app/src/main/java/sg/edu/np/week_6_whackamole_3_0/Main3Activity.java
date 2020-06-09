@@ -27,17 +27,36 @@ public class Main3Activity extends AppCompatActivity {
      */
     private static final String FILENAME = "Main3Activity.java";
     private static final String TAG = "Whack-A-Mole3.0!";
+    private Button backToLogin;
+    MyDBHandler db = new MyDBHandler(this,null,null,1);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main3);
-        /* Hint:
-        This method receives the username account data and looks up the database for find the
-        corresponding information to display in the recyclerView for the level selections page.
+        backToLogin = findViewById(R.id.backToLogin);
 
-        Log.v(TAG, FILENAME + ": Show level for User: "+ userName);
-         */
+        Intent receivingI = getIntent();
+        String currentUser = receivingI.getStringExtra("loginUser");
+        Log.v(TAG, FILENAME + ": Show level for User: "+ currentUser);
+
+        UserData userData = db.findUser(currentUser);
+
+        RecyclerView recyclerView = findViewById(R.id.picklevelrecycler);
+        CustomScoreAdaptor mAdapter = new CustomScoreAdaptor(userData,getApplicationContext());
+
+        LinearLayoutManager mLayout = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(mLayout);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(mAdapter);
+
+        backToLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getApplicationContext(),MainActivity.class);
+                startActivity(i);
+            }
+        });
     }
 
     @Override
